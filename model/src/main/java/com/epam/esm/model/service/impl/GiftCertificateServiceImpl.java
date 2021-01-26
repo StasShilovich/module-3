@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
+
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final static Logger logger = Logger.getLogger(GiftCertificateServiceImpl.class);

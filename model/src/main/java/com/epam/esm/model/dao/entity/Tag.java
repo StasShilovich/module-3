@@ -3,21 +3,23 @@ package com.epam.esm.model.dao.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class Tag implements Comparable<Tag> {
+@Entity(name = "tag")
+public class Tag {
 
-    @EqualsAndHashCode.Exclude
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
-    @Override
-    public int compareTo(Tag tag) {
-        return name.compareTo(tag.getName());
-    }
 }
