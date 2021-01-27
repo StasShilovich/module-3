@@ -20,12 +20,20 @@ public class GiftCertificate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column
     private String name;
+    @Column
     private String description;
+    @Column
     private BigDecimal price;
+    @Column
     private Integer duration;
+    @Column(name = "create_date")
     private LocalDateTime createDate;
+    @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "tag_certificate", joinColumns = {@JoinColumn(name = "id_certificate")},
+            inverseJoinColumns = {@JoinColumn(name = "id_tag")})
     private List<Tag> tags;
 }

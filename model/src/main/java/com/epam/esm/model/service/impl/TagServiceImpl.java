@@ -56,7 +56,7 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public void delete(Long id) throws ServiceException, NotExistEntityException {
         try {
-            tagDao.deleteById(id);
+            tagDao.delete(id);
         } catch (DataAccessException e) {
             logger.error("Delete tag service exception", e);
             throw new ServiceException("Delete tag service exception", e);
