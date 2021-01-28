@@ -1,6 +1,6 @@
 package com.epam.esm.model.service.impl;
 
-import com.epam.esm.model.dao.TagDao;
+import com.epam.esm.model.dao.GenericDao;
 import com.epam.esm.model.dao.entity.Tag;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.TagService;
@@ -20,11 +20,12 @@ import java.util.stream.Collectors;
 public class TagServiceImpl implements TagService {
 
     private final static Logger logger = Logger.getLogger(TagServiceImpl.class);
-    private final TagDao tagDao;
+    private final GenericDao<Tag> tagDao;
     private final TagDTOMapper dtoMapper;
 
-    public TagServiceImpl(TagDao tagDao, TagDTOMapper dtoMapper) {
-        this.tagDao = tagDao;
+    public TagServiceImpl(GenericDao<Tag> genericDao, TagDTOMapper dtoMapper) {
+        this.tagDao = genericDao;
+        this.tagDao.setClazz(Tag.class);
         this.dtoMapper = dtoMapper;
     }
 
@@ -67,7 +68,8 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public List<TagDTO> findAll() throws ServiceException {
         try {
-            List<Tag> tags = tagDao.findAll();
+            /// TODO: 28.01.2021
+            List<Tag> tags = tagDao.findAll(0, 3);
             return tags.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {
             logger.error("Find all tag service exception", e);

@@ -1,6 +1,6 @@
 package com.epam.esm.model.service.impl;
 
-import com.epam.esm.model.dao.GiftCertificateDao;
+import com.epam.esm.model.dao.GenericDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.service.exception.NotExistEntityException;
@@ -21,11 +21,12 @@ import java.util.stream.Collectors;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final static Logger logger = Logger.getLogger(GiftCertificateServiceImpl.class);
-    private final GiftCertificateDao certificateDao;
+    private final GenericDao<GiftCertificate> certificateDao;
     private final GiftCertificateDTOMapper dtoMapper;
 
-    public GiftCertificateServiceImpl(GiftCertificateDao certificateDao, GiftCertificateDTOMapper dtoMapper) {
+    public GiftCertificateServiceImpl(GenericDao<GiftCertificate> certificateDao, GiftCertificateDTOMapper dtoMapper) {
         this.certificateDao = certificateDao;
+        this.certificateDao.setClazz(GiftCertificate.class);
         this.dtoMapper = dtoMapper;
     }
 
@@ -89,8 +90,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public List<CertificateDTO> filterByParameters(String tag, String part, String sortBy, SortType type)
             throws ServiceException {
         try {
-            List<GiftCertificate> certificates = certificateDao.filterByParameters(tag, part, sortBy, type);
-            return certificates.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
+//            List<GiftCertificate> certificates = certificateDao.filterByParameters(tag, part, sortBy, type);
+//            return certificates.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
+            return null;
         } catch (DataAccessException e) {
             logger.error("Filter by parameters exception", e);
             throw new ServiceException("Filter by parameters exception", e);
