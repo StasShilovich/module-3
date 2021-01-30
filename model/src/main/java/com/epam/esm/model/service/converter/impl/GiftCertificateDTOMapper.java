@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class GiftCertificateDTOMapper implements DTOMapper<CertificateDTO, GiftCertificate> {
-    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.s";
 
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.s";
     private final TagDTOMapper tagDTOMapper;
 
     public GiftCertificateDTOMapper(TagDTOMapper tagDTOMapper) {

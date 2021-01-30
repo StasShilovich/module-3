@@ -10,18 +10,24 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@Entity(name = "tag")
-public class Tag {
-
+@Entity(name = "order")
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "certificate_id")
+    private Long certificateId;
     @Column
-    private String name;
-
+    private BigDecimal cost;
+    @Column(name = "purchase_time")
+    private LocalDateTime purchaseTime;
+    @Column(name = "user_id")
+    private Long userId;
 }

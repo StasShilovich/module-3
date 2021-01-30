@@ -14,5 +14,5 @@ public interface TagService {
 
     void delete(Long id) throws ServiceException, NotExistEntityException;
 
-    List<TagDTO> findAll() throws ServiceException;
+    List<TagDTO> findAll(Integer offset, Integer limit) throws ServiceException;
 }

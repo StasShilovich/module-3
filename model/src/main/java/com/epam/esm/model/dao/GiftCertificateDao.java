@@ -5,8 +5,9 @@ import com.epam.esm.model.dao.entity.SortType;
 
 import java.util.List;
 
-public interface GiftCertificateDao {
+public interface GiftCertificateDao extends GenericDao<GiftCertificate> {
 
-    List<GiftCertificate> filterByParameters(String tag, String part, String sortBy, SortType type);
+    List<GiftCertificate> filterByParameters(
+            String tag, String part, String sortBy, SortType type, int offset, int limit);
 
 }

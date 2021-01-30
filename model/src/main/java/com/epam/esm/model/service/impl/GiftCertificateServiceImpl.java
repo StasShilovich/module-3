@@ -1,6 +1,6 @@
 package com.epam.esm.model.service.impl;
 
-import com.epam.esm.model.dao.GenericDao;
+import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.dao.entity.SortType;
 import com.epam.esm.model.service.exception.NotExistEntityException;
@@ -20,13 +20,14 @@ import java.util.stream.Collectors;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
-    private final static Logger logger = Logger.getLogger(GiftCertificateServiceImpl.class);
-    private final GenericDao<GiftCertificate> certificateDao;
+    private static final Logger logger = Logger.getLogger(GiftCertificateServiceImpl.class);
+    private static final int DEFAULT_CERTIFICATE_LIMIT = 3;
+    private static final int DEFAULT_CERTIFICATE_OFFSET = 0;
+    private final GiftCertificateDao certificateDao;
     private final GiftCertificateDTOMapper dtoMapper;
 
-    public GiftCertificateServiceImpl(GenericDao<GiftCertificate> certificateDao, GiftCertificateDTOMapper dtoMapper) {
+    public GiftCertificateServiceImpl(GiftCertificateDao certificateDao, GiftCertificateDTOMapper dtoMapper) {
         this.certificateDao = certificateDao;
-        this.certificateDao.setClazz(GiftCertificate.class);
         this.dtoMapper = dtoMapper;
     }
 
@@ -35,9 +36,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public CertificateDTO find(Long id) throws ServiceException, NotExistEntityException {
         try {
             Optional<GiftCertificate> certificate = certificateDao.findById(id);
-            certificate.orElseThrow(() ->
-                    new NotExistEntityException("Gift certificate with id=" + id + " not exist!"));
-            return dtoMapper.toDTO(certificate.get());
+            return certificate.map(dtoMapper::toDTO)
+                    .orElseThrow(() -> new NotExistEntityException("Gift certificate with id=" + id + " not exist!"));
         } catch (DataAccessException e) {
             logger.error("Find certificate service exception", e);
             throw new ServiceException("Find certificate service exception", e);
@@ -49,9 +49,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public CertificateDTO add(CertificateDTO certificateDTO) throws ServiceException {
         try {
             GiftCertificate certificate = dtoMapper.fromDTO(certificateDTO);
-            Optional<GiftCertificate> giftCertificate = null;
-            giftCertificate.orElseThrow(() -> new ServiceException("Invalid gift certificate " + certificateDTO));
-            return dtoMapper.toDTO(giftCertificate.get());
+            GiftCertificate giftCertificate = certificateDao.create(certificate);
+            return dtoMapper.toDTO(giftCertificate);
         } catch (DataAccessException e) {
             logger.error("Add certificate service exception", e);
             throw new ServiceException("Add certificate service exception", e);
@@ -63,11 +62,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public CertificateDTO update(CertificateDTO certificateDTO) throws ServiceException {
         try {
             GiftCertificate certificate = dtoMapper.fromDTO(certificateDTO);
-
-            Optional<GiftCertificate> giftCertificate = certificateDao.findById(certificateDTO.getId());
-            giftCertificate.orElseThrow(
-                    () -> new ServiceException("Update certificate exception with id=" + certificateDTO.getId()));
-            return dtoMapper.toDTO(giftCertificate.get());
+            GiftCertificate updated = certificateDao.update(certificate);
+            return dtoMapper.toDTO(updated);
         } catch (DataAccessException e) {
             logger.error("Update certificate service exception", e);
             throw new ServiceException("Update certificate service exception", e);
@@ -87,12 +83,21 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public List<CertificateDTO> filterByParameters(String tag, String part, String sortBy, SortType type)
+    public List<CertificateDTO> filterByParameters(
+            String tag, String part, String sortBy, SortType type, Integer offset, Integer limit)
             throws ServiceException {
         try {
-//            List<GiftCertificate> certificates = certificateDao.filterByParameters(tag, part, sortBy, type);
-//            return certificates.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
-            return null;
+            Integer offsetValue = offset;
+            Integer limitValue = limit;
+            if (offset == null) {
+                offsetValue = DEFAULT_CERTIFICATE_OFFSET;
+            }
+            if (limit == null) {
+                limitValue = DEFAULT_CERTIFICATE_LIMIT;
+            }
+            List<GiftCertificate> certificates = certificateDao
+                    .filterByParameters(tag, part, sortBy, type, offsetValue, limitValue);
+            return certificates.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {
             logger.error("Filter by parameters exception", e);
             throw new ServiceException("Filter by parameters exception", e);

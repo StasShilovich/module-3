@@ -17,6 +17,7 @@ public interface GiftCertificateService {
 
     void delete(Long id) throws ServiceException, NotExistEntityException;
 
-    List<CertificateDTO> filterByParameters(String tag, String part, String sortBy, SortType type)
+    List<CertificateDTO> filterByParameters(
+            String tag, String part, String sortBy, SortType type, Integer offset, Integer limit)
             throws ServiceException;
 }

@@ -1,4 +1,6 @@
 package com.epam.esm.model.dao;
 
-public interface TagDao {
+import com.epam.esm.model.dao.entity.Tag;
+
+public interface TagDao extends GenericDao<Tag> {
 }
