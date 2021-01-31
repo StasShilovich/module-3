@@ -21,7 +21,7 @@ public class OrderDTOMapper implements DTOMapper<OrderDTO, Order> {
         String purchaseTime = order.getPurchaseTime().format(formatter);
         return OrderDTO.builder()
                 .id(order.getId())
-                .certificateId(order.getCertificateId())
+
                 .cost(order.getCost().toString())
                 .purchaseTime(purchaseTime)
                 .build();
@@ -31,7 +31,7 @@ public class OrderDTOMapper implements DTOMapper<OrderDTO, Order> {
     public Order fromDTO(OrderDTO orderDTO) {
         return Order.builder()
                 .id(orderDTO.getId())
-                .certificateId(orderDTO.getCertificateId())
+
                 .cost(StringUtils.isNotEmpty(orderDTO.getCost()) ? new BigDecimal(orderDTO.getCost()) : BigDecimal.ZERO)
                 .purchaseTime(StringUtils.isNotEmpty(orderDTO.getPurchaseTime()) ?
                         LocalDateTime.parse(orderDTO.getPurchaseTime()) : null)

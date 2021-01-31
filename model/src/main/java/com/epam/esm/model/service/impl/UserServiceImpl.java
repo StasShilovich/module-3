@@ -1,9 +1,11 @@
 package com.epam.esm.model.service.impl;
 
 import com.epam.esm.model.dao.UserDao;
+import com.epam.esm.model.dao.entity.Order;
 import com.epam.esm.model.dao.entity.User;
 import com.epam.esm.model.service.UserService;
 import com.epam.esm.model.service.converter.impl.UserDTOMapper;
+import com.epam.esm.model.service.dto.TopUserInfo;
 import com.epam.esm.model.service.dto.UserDTO;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.exception.ServiceException;
@@ -12,7 +14,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -43,10 +47,20 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void orderCertificate(Long id, Long idCertificate) throws ServiceException {
         try {
-           userDao.orderCertificate(id,idCertificate);
+            userDao.orderCertificate(id, idCertificate);
         } catch (DataAccessException e) {
             logger.error("Order certificate service exception", e);
             throw new ServiceException("Order certificate service exception", e);
+        }
+    }
+
+    @Override
+    public TopUserInfo getTopUserInfo() throws ServiceException {
+        try {
+            return userDao.getTopUserInfo();
+        } catch (DataAccessException e) {
+            logger.error("Tag statistic service exception", e);
+            throw new ServiceException("Tag statistic service exception", e);
         }
     }
 }

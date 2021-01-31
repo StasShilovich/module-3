@@ -1,6 +1,7 @@
 package com.epam.esm.controller.rest;
 
 import com.epam.esm.model.service.UserService;
+import com.epam.esm.model.service.dto.TopUserInfo;
 import com.epam.esm.model.service.dto.UserDTO;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.exception.ServiceException;
@@ -26,8 +27,15 @@ public class UserController {
     }
 
     @PostMapping("/{id}/orders")
-    public ResponseEntity orderCertificate(@PathVariable(name = "id") Long id, @RequestBody Long idCertificate) throws ServiceException {
+    public ResponseEntity orderCertificate(@PathVariable(name = "id") Long id, @RequestBody Long idCertificate)
+            throws ServiceException {
         userService.orderCertificate(id, idCertificate);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/top/info")
+    public ResponseEntity<TopUserInfo> getTopUserInfo() throws ServiceException {
+        TopUserInfo topUserInfo = userService.getTopUserInfo();
+        return ResponseEntity.ok(topUserInfo);
     }
 }

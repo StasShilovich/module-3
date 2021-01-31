@@ -48,11 +48,12 @@ public class ApplicationConfig {
         properties.setProperty("hibernate.dialect", environment.getProperty("hibernate.dialect"));
         properties.setProperty("hibernate.ddl-auto", environment.getProperty("hibernate.ddl-auto"));
         properties.setProperty("hibernate.show_sql", environment.getProperty("hibernate.show_sql"));
-        properties.setProperty("hibernate.globally_quoted_identifiers", environment.getProperty("hibernate.globally_quoted_identifiers"));
+        properties.setProperty("hibernate.globally_quoted_identifiers",
+                environment.getProperty("hibernate.globally_quoted_identifiers"));
         properties.setProperty("hibernate.current_session_context_class",
                 environment.getProperty("hibernate.current_session_context_class"));
         entityManager.setJpaProperties(properties);
-        return entityManager ;
+        return entityManager;
     }
 
     @Bean
