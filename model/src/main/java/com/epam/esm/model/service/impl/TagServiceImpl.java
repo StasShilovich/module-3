@@ -2,6 +2,8 @@ package com.epam.esm.model.service.impl;
 
 import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.entity.Tag;
+import com.epam.esm.model.service.Page;
+import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.TagService;
 import com.epam.esm.model.service.converter.impl.TagDTOMapper;
@@ -68,17 +70,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public List<TagDTO> findAll(Integer offset, Integer limit) throws ServiceException {
+    public List<TagDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
-            Integer offsetValue = offset;
-            Integer limitValue = limit;
-            if (offset == null) {
-                offsetValue = DEFAULT_TAG_OFFSET;
-            }
-            if (limit == null) {
-                limitValue = DEFAULT_TAG_LIMIT;
-            }
-            List<Tag> tags = tagDao.findAll(offsetValue, limitValue);
+            long count = tagDao.getCountOfEntities();
+            Page<Tag> tagPage = new Page<>(page, size, count);
+            List<Tag> tags = tagDao.findAll(tagPage.getOffset(), tagPage.getOffset());
             return tags.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {
             logger.error("Find all tag service exception", e);

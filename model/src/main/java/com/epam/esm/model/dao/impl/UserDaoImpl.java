@@ -1,4 +1,4 @@
-package com.epam.esm.model.impl;
+package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.UserDao;
@@ -14,7 +14,6 @@ import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class UserDaoImpl extends GenericDaoImpl<User> implements UserDao {

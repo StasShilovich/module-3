@@ -1,5 +1,6 @@
 package com.epam.esm.controller.rest;
 
+import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.TagService;
 import com.epam.esm.model.service.dto.TagDTO;
@@ -64,10 +65,10 @@ public class TagController {
 
     @GetMapping
     public ResponseEntity<List<TagDTO>> findAll(
-            @RequestParam(value = "offset", required = false) Integer offset,
-            @RequestParam(value = "limit", required = false) Integer limit
-    ) throws ServiceException {
-        List<TagDTO> tags = tagService.findAll(offset, limit);
+            @RequestParam(value = "page", required = false) int page,
+            @RequestParam(value = "size", required = false) int size
+    ) throws ServiceException, IncorrectArgumentException {
+        List<TagDTO> tags = tagService.findAll(page, size);
         return ResponseEntity.ok(tags);
     }
 }

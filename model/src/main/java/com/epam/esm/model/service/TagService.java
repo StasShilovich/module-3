@@ -1,5 +1,6 @@
 package com.epam.esm.model.service;
 
+import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.dto.TagDTO;
 import com.epam.esm.model.service.exception.ServiceException;
@@ -14,5 +15,5 @@ public interface TagService {
 
     void delete(Long id) throws ServiceException, NotExistEntityException;
 
-    List<TagDTO> findAll(Integer offset, Integer limit) throws ServiceException;
+    List<TagDTO> findAll(int offset, int limit) throws ServiceException, IncorrectArgumentException;
 }

@@ -1,4 +1,4 @@
-package com.epam.esm.model.impl;
+package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;

@@ -1,5 +1,6 @@
 package com.epam.esm.controller.exception;
 
+import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.exception.ServiceException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,11 @@ public class RestExceptionHandler {
     private ResponseEntity<ErrorResponse> handleNotExistException(RuntimeException exception) {
         String message = exception.getClass().getName() + " : " + exception.getMessage();
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(buildErrorResponse(INTERNAL_SERVER_ERROR, message));
+    }
+    @ExceptionHandler(IncorrectArgumentException.class)
+    private ResponseEntity<ErrorResponse> handleNotExistException(IncorrectArgumentException exception) {
+        String message = exception.getClass().getName() + " : " + exception.getMessage();
+        return ResponseEntity.status(BAD_REQUEST).body(buildErrorResponse(BAD_REQUEST, message));
     }
 
     private ErrorResponse buildErrorResponse(HttpStatus status, String message) {
