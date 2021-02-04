@@ -36,7 +36,6 @@ public class OrderDaoImpl extends GenericDaoImpl<Order> implements OrderDao {
         Order order = Order.builder()
                 // TODO: 03.02.2021
                 .userId(id)
-                .cost(price)
                 .purchaseTime(LocalDateTime.now())
                 .build();
         entityManager.persist(order);

@@ -23,5 +23,4 @@ public class Tag {
     private Long id;
     @Column
     private String name;
-
 }

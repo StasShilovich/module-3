@@ -2,6 +2,7 @@ package com.epam.esm.controller.rest;
 
 import com.epam.esm.model.service.OrderService;
 import com.epam.esm.model.service.UserService;
+import com.epam.esm.model.service.dto.OrderDTO;
 import com.epam.esm.model.service.dto.TopUserInfo;
 import com.epam.esm.model.service.dto.UserDTO;
 import com.epam.esm.model.service.exception.NotExistEntityException;
@@ -41,4 +42,11 @@ public class UserController {
         TopUserInfo topUserInfo = orderService.getTopUserInfo();
         return ResponseEntity.ok(topUserInfo);
     }
+
+    @GetMapping("/{id}/test")
+    public ResponseEntity<OrderDTO> test(@PathVariable(name = "id") Long id) throws ServiceException {
+        OrderDTO orderDTO = orderService.find(id);
+        return ResponseEntity.ok(orderDTO);
+    }
+
 }

@@ -76,7 +76,7 @@ public class TagServiceImpl implements TagService {
     public List<TagDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
             long count = tagDao.getCountOfEntities();
-            Page<Tag> tagPage = new Page<>(page, size, count);
+            Page tagPage = new Page(page, size, count);
             List<Tag> tags = tagDao.findAll(tagPage.getOffset(), tagPage.getLimit());
             return tags.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {

@@ -5,16 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class OrderDTO {
+public class OrderCertificateDTO {
 
-    private Long id;
-    private String purchaseTime;
-    private Long userId;
-    private Set<OrderCertificateDTO> orderCertificates;
+    private Long orderId;
+    private Long certificateId;
+    private Long quantity;
+    private BigDecimal oneCost;
 }

@@ -1,6 +1,5 @@
-package com.epam.esm.controller;
+package com.epam.esm.controller.rest;
 
-import com.epam.esm.controller.rest.TagController;
 import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.ServiceException;
 import org.springframework.hateoas.Link;
@@ -11,10 +10,12 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface CommonController<T> {
-    ResponseEntity<PagedModel<T>> findAll(int page, int size) throws ServiceException, IncorrectArgumentException;
+public abstract class CommonController<T> {
 
-    default List<Link> buildLink(Class<? extends CommonController<T>> clazz, int page, int size, long maxPage)
+    public abstract ResponseEntity<PagedModel<T>> findAll(int page, int size)
+            throws ServiceException, IncorrectArgumentException;
+
+    protected List<Link> buildLink(Class<? extends CommonController<T>> clazz, int page, int size, long maxPage)
             throws ServiceException, IncorrectArgumentException {
         List<Link> linkList = new ArrayList<>();
         Link self = WebMvcLinkBuilder.linkTo(

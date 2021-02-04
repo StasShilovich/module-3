@@ -1,6 +1,5 @@
 package com.epam.esm.controller.rest;
 
-import com.epam.esm.controller.CommonController;
 import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.TagService;
@@ -19,7 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/tags")
-public class TagController implements CommonController<TagDTO> {
+public class TagController extends CommonController<TagDTO> {
 
     private final TagService tagService;
 
