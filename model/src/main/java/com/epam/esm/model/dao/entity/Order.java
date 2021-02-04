@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,7 +25,8 @@ public class Order {
     private LocalDateTime purchaseTime;
     @Column(name = "user_id")
     private Long userId;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "certificate_id")
-    private GiftCertificate certificate;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "order_certificate", joinColumns = {@JoinColumn(name = "id_order")},
+            inverseJoinColumns = {@JoinColumn(name = "id_certificate"), @JoinColumn(name = "quantity")})
+    private List<GiftCertificate> certificates;
 }

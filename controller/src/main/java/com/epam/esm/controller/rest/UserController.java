@@ -1,5 +1,6 @@
 package com.epam.esm.controller.rest;
 
+import com.epam.esm.model.service.OrderService;
 import com.epam.esm.model.service.UserService;
 import com.epam.esm.model.service.dto.TopUserInfo;
 import com.epam.esm.model.service.dto.UserDTO;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final OrderService orderService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, OrderService orderService) {
         this.userService = userService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/{id}")
@@ -29,13 +32,13 @@ public class UserController {
     @PostMapping("/{id}/orders")
     public ResponseEntity orderCertificate(@PathVariable(name = "id") Long id, @RequestBody Long idCertificate)
             throws ServiceException {
-        userService.orderCertificate(id, idCertificate);
+        orderService.orderCertificate(id, idCertificate);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/top/info")
     public ResponseEntity<TopUserInfo> getTopUserInfo() throws ServiceException {
-        TopUserInfo topUserInfo = userService.getTopUserInfo();
+        TopUserInfo topUserInfo = orderService.getTopUserInfo();
         return ResponseEntity.ok(topUserInfo);
     }
 }

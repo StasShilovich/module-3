@@ -11,6 +11,9 @@ import com.epam.esm.model.service.dto.TagDTO;
 import com.epam.esm.model.service.exception.ServiceException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,11 +77,21 @@ public class TagServiceImpl implements TagService {
         try {
             long count = tagDao.getCountOfEntities();
             Page<Tag> tagPage = new Page<>(page, size, count);
-            List<Tag> tags = tagDao.findAll(tagPage.getOffset(), tagPage.getOffset());
+            List<Tag> tags = tagDao.findAll(tagPage.getOffset(), tagPage.getLimit());
             return tags.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {
             logger.error("Find all tag service exception", e);
             throw new ServiceException("Find all tag service exception", e);
+        }
+    }
+
+    @Override
+    public long count() throws ServiceException {
+        try {
+            return tagDao.getCountOfEntities();
+        } catch (DataAccessException e) {
+            logger.error("Delete tag service exception", e);
+            throw new ServiceException("Delete tag service exception", e);
         }
     }
 }
