@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -17,14 +15,23 @@ import java.math.BigDecimal;
 @Builder(toBuilder = true)
 @Entity(name = "order_certificate")
 public class OrderCertificate implements Serializable {
-    @Id
-    @Column(name = "id_order")
-    private Long orderId;
-    @Id
-    @Column(name = "id_certificate")
-    private Long certificateId;
+
+    @EmbeddedId
+    private OrderCertificateId id;
     @Column(name = "quantity")
     private Long quantity;
     @Column(name = "one_cost")
     private BigDecimal oneCost;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder(toBuilder = true)
+    @Embeddable
+    public static class OrderCertificateId implements Serializable {
+        @Column
+        private Long orderId;
+        @Column
+        private Long certificateId;
+    }
 }

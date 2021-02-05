@@ -25,7 +25,7 @@ public class User {
     private String surname;
     @Column
     private BigDecimal cash;
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private Set<Order> orders;
 }

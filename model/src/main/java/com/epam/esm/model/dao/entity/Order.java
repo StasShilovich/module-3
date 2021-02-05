@@ -23,6 +23,6 @@ public class Order {
     @Column(name = "user_id")
     private Long userId;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn
+    @JoinTable
     private Set<OrderCertificate> certificates;
 }

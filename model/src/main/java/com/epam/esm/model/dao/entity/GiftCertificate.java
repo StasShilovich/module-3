@@ -42,7 +42,7 @@ public class GiftCertificate {
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "tag_certificate", joinColumns = {@JoinColumn(name = "id_certificate")},
-            inverseJoinColumns = {@JoinColumn(name = "id_tag")})
+    @JoinTable(name = "tag_certificate", joinColumns = @JoinColumn(name = "id_certificate"),
+            inverseJoinColumns = @JoinColumn(name = "id_tag"))
     private List<Tag> tags;
 }

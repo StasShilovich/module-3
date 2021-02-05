@@ -10,8 +10,8 @@ public class OrderCertificateDTOMapper implements DTOMapper<OrderCertificateDTO,
     @Override
     public OrderCertificateDTO toDTO(OrderCertificate orderCertificate) {
         return OrderCertificateDTO.builder()
-                .orderId(orderCertificate.getOrderId())
-                .certificateId(orderCertificate.getCertificateId())
+//                .orderId(orderCertificate.getOrderId())
+//                .certificateId(orderCertificate.getCertificateId())
                 .oneCost(orderCertificate.getOneCost())
                 .quantity(orderCertificate.getQuantity())
                 .build();
@@ -20,8 +20,8 @@ public class OrderCertificateDTOMapper implements DTOMapper<OrderCertificateDTO,
     @Override
     public OrderCertificate fromDTO(OrderCertificateDTO orderCertificateDTO) {
         return OrderCertificate.builder()
-                .orderId(orderCertificateDTO.getOrderId())
-                .certificateId(orderCertificateDTO.getCertificateId())
+//                .orderId(orderCertificateDTO.getOrderId())
+//                .certificateId(orderCertificateDTO.getCertificateId())
                 .oneCost(orderCertificateDTO.getOneCost())
                 .quantity(orderCertificateDTO.getQuantity())
                 .build();
