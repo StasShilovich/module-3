@@ -1,11 +1,9 @@
 package com.epam.esm.model.dao;
 
 import com.epam.esm.model.dao.entity.Order;
-import com.epam.esm.model.service.dto.TopUserInfo;
+import com.epam.esm.model.dao.entity.Tag;
 
 public interface OrderDao extends GenericDao<Order> {
 
-    void orderCertificate(Long id, Long idCertificate);
-
-    TopUserInfo getTopUserInfo();
+    Tag getTopUserTag();
 }

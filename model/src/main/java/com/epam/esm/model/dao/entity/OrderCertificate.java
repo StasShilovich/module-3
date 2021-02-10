@@ -1,11 +1,19 @@
 package com.epam.esm.model.dao.entity;
 
+import com.epam.esm.model.dao.AuditListener;
+import com.epam.esm.model.dao.GenericEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -13,25 +21,27 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
+@EntityListeners(AuditListener.class)
 @Entity(name = "order_certificate")
-public class OrderCertificate implements Serializable {
+public class OrderCertificate extends GenericEntity implements Serializable {
 
-    @EmbeddedId
-    private OrderCertificateId id;
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "id_order")
+    @EqualsAndHashCode.Exclude
+    private Order order;
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "id_certificate")
+    @EqualsAndHashCode.Exclude
+    private GiftCertificate certificate;
     @Column(name = "quantity")
     private Long quantity;
     @Column(name = "one_cost")
     private BigDecimal oneCost;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder(toBuilder = true)
-    @Embeddable
-    public static class OrderCertificateId implements Serializable {
-        @Column
-        private Long orderId;
-        @Column
-        private Long certificateId;
+    @Override
+    public Long getId() {
+        return order.getId() + certificate.getId();
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.model.service.exception;
 
 public class IncorrectArgumentException extends Exception {
+
     public IncorrectArgumentException() {
         super();
     }

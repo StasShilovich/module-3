@@ -3,6 +3,8 @@ package com.epam.esm.model.service.impl;
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.dao.entity.SortType;
+import com.epam.esm.model.service.Page;
+import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.GiftCertificateService;
 import com.epam.esm.model.service.converter.impl.GiftCertificateDTOMapper;
@@ -21,8 +23,6 @@ import java.util.stream.Collectors;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private static final Logger logger = Logger.getLogger(GiftCertificateServiceImpl.class);
-    private static final int DEFAULT_CERTIFICATE_LIMIT = 3;
-    private static final int DEFAULT_CERTIFICATE_OFFSET = 0;
     private final GiftCertificateDao certificateDao;
     private final GiftCertificateDTOMapper dtoMapper;
 
@@ -72,7 +72,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void delete(Long id) throws ServiceException, NotExistEntityException {
+    public void delete(Long id) throws ServiceException {
         try {
             certificateDao.delete(id);
         } catch (DataAccessException e) {
@@ -84,23 +84,27 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public List<CertificateDTO> filterByParameters(
-            String tag, String part, String sortBy, SortType type, Integer offset, Integer limit)
-            throws ServiceException {
+            String tag, String part, String sortBy, SortType type, int page, int size)
+            throws ServiceException, IncorrectArgumentException {
         try {
-            Integer offsetValue = offset;
-            Integer limitValue = limit;
-            if (offset == null) {
-                offsetValue = DEFAULT_CERTIFICATE_OFFSET;
-            }
-            if (limit == null) {
-                limitValue = DEFAULT_CERTIFICATE_LIMIT;
-            }
-            List<GiftCertificate> certificates = certificateDao
-                    .filterByParameters(tag, part, sortBy, type, offsetValue, limitValue);
+            long count = count();
+            Page certificatePage = new Page(page, size, count);
+            List<GiftCertificate> certificates = certificateDao.filterByParameters(tag, part, sortBy, type,
+                    certificatePage.getOffset(), certificatePage.getLimit());
             return certificates.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {
             logger.error("Filter by parameters exception", e);
             throw new ServiceException("Filter by parameters exception", e);
+        }
+    }
+
+    @Override
+    public long count() throws ServiceException {
+        try {
+            return certificateDao.getCountOfEntities();
+        } catch (DataAccessException e) {
+            logger.error("Count certificates service exception", e);
+            throw new ServiceException("Count certificates service exception", e);
         }
     }
 }

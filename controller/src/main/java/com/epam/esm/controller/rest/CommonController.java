@@ -35,7 +35,7 @@ public abstract class CommonController<T> {
         if (maxPage > page) {
             Link next = WebMvcLinkBuilder.linkTo(
                     WebMvcLinkBuilder
-                            .methodOn(TagController.class)
+                            .methodOn(clazz)
                             .findAll(page + 1, size)
             ).withRel("next");
             linkList.add(next);

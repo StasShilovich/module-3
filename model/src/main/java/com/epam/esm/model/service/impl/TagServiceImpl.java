@@ -4,16 +4,12 @@ import com.epam.esm.model.dao.TagDao;
 import com.epam.esm.model.dao.entity.Tag;
 import com.epam.esm.model.service.Page;
 import com.epam.esm.model.service.exception.IncorrectArgumentException;
-import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.TagService;
 import com.epam.esm.model.service.converter.impl.TagDTOMapper;
 import com.epam.esm.model.service.dto.TagDTO;
 import com.epam.esm.model.service.exception.ServiceException;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +21,6 @@ import java.util.stream.Collectors;
 public class TagServiceImpl implements TagService {
 
     private static final Logger logger = Logger.getLogger(TagServiceImpl.class);
-    private static final int DEFAULT_TAG_LIMIT = 3;
-    private static final int DEFAULT_TAG_OFFSET = 0;
     private final TagDao tagDao;
     private final TagDTOMapper dtoMapper;
 
@@ -62,7 +56,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void delete(Long id) throws ServiceException, NotExistEntityException {
+    public void delete(Long id) throws ServiceException {
         try {
             tagDao.delete(id);
         } catch (DataAccessException e) {
@@ -75,7 +69,7 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public List<TagDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
-            long count = tagDao.getCountOfEntities();
+            long count = count();
             Page tagPage = new Page(page, size, count);
             List<Tag> tags = tagDao.findAll(tagPage.getOffset(), tagPage.getLimit());
             return tags.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
@@ -90,8 +84,8 @@ public class TagServiceImpl implements TagService {
         try {
             return tagDao.getCountOfEntities();
         } catch (DataAccessException e) {
-            logger.error("Delete tag service exception", e);
-            throw new ServiceException("Delete tag service exception", e);
+            logger.error("Count tag service exception", e);
+            throw new ServiceException("Count tag service exception", e);
         }
     }
 }

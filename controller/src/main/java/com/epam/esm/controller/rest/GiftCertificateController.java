@@ -1,14 +1,27 @@
 package com.epam.esm.controller.rest;
 
 import com.epam.esm.model.dao.entity.SortType;
+import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.GiftCertificateService;
 import com.epam.esm.model.service.dto.CertificateDTO;
 import com.epam.esm.model.service.exception.ServiceException;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +34,7 @@ public class GiftCertificateController {
 
     private final GiftCertificateService certificateService;
 
-    private GiftCertificateController(GiftCertificateService certificateService) {
+    public GiftCertificateController(GiftCertificateService certificateService) {
         this.certificateService = certificateService;
     }
 
@@ -86,19 +99,47 @@ public class GiftCertificateController {
      * @param part
      * @param sortBy
      * @param type
+     * @param page
+     * @param size
      * @return
      * @throws ServiceException
      */
     @GetMapping
-    public ResponseEntity<List<CertificateDTO>> filterByParameter(
+    public ResponseEntity<PagedModel<CertificateDTO>> filterByParameter(
             @RequestParam(value = "tag", required = false) String tag,
             @RequestParam(value = "part", required = false) String part,
             @RequestParam(value = "sort_by", required = false) String sortBy,
             @RequestParam(value = "type", required = false) SortType type,
-            @RequestParam(value = "offset", required = false) Integer offset,
-            @RequestParam(value = "limit", required = false) Integer limit)
-            throws ServiceException {
-        List<CertificateDTO> list = certificateService.filterByParameters(tag, part, sortBy, type, offset, limit);
-        return ResponseEntity.ok(list);
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "3") int size
+    ) throws ServiceException, IncorrectArgumentException {
+        List<CertificateDTO> list = certificateService.filterByParameters(tag, part, sortBy, type, page, size);
+        long count = certificateService.count();
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
+        List<Link> linkList = new ArrayList<>();
+        Link self = WebMvcLinkBuilder.linkTo(
+                WebMvcLinkBuilder
+                        .methodOn(GiftCertificateController.class)
+                        .filterByParameter(tag, part, sortBy, type, page, size)
+        ).withRel("self");
+        linkList.add(self);
+        if (page > 1) {
+            Link previous = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder
+                            .methodOn(GiftCertificateController.class)
+                            .filterByParameter(tag, part, sortBy, type, page - 1, size)
+            ).withRel("previous");
+            linkList.add(previous);
+        }
+        if (pageMetadata.getTotalPages() > page) {
+            Link next = WebMvcLinkBuilder.linkTo(
+                    WebMvcLinkBuilder
+                            .methodOn(GiftCertificateController.class)
+                            .filterByParameter(tag, part, sortBy, type, page + 1, size)
+            ).withRel("next");
+            linkList.add(next);
+        }
+        PagedModel<CertificateDTO> pagedModel = PagedModel.of(list, pageMetadata, linkList);
+        return ResponseEntity.ok(pagedModel);
     }
 }

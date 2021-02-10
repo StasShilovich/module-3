@@ -1,77 +1,84 @@
 package com.epam.esm.model.dao.impl;
 
-import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.OrderDao;
-import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.dao.entity.Order;
-import com.epam.esm.model.service.dto.TagDTO;
-import com.epam.esm.model.service.dto.TopUserInfo;
+import com.epam.esm.model.dao.entity.OrderCertificate;
+import com.epam.esm.model.dao.entity.Tag;
+import com.epam.esm.model.dao.entity.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
+import javax.persistence.criteria.*;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class OrderDaoImpl extends GenericDaoImpl<Order> implements OrderDao {
 
-    private final GiftCertificateDao certificateDao;
-
-    public OrderDaoImpl(GiftCertificateDao certificateDao) {
+    public OrderDaoImpl() {
         super(Order.class);
-        this.certificateDao = certificateDao;
     }
 
     @Override
-    public void orderCertificate(Long id, Long idCertificate) {
-        Optional<GiftCertificate> certificate = certificateDao.findById(idCertificate);
-        BigDecimal price = certificate.map(GiftCertificate::getPrice)
-                .orElseThrow(() -> new NoSuchElementException("No certificate with id=" + idCertificate));
+    public Order create(Order entity) {
         Order order = Order.builder()
-                // TODO: 03.02.2021
-                .userId(id)
-                .purchaseTime(LocalDateTime.now())
+                .userId(entity.getUserId())
+                .purchaseTime(entity.getPurchaseTime())
+                .certificates(new HashSet<>())
                 .build();
         entityManager.persist(order);
-    }
-
-    public TopUserInfo getTopUserInfo() {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> query = builder.createTupleQuery();
-        String sql = "SELECT o.user_id,sum(o.cost),count(t.name),t.id,t.name  FROM certificates.order o " +
-                "join gift_certificate c on o.certificate_id=c.id " +
-                "join tag_certificate tc on c.id=tc.id_certificate " +
-                "join tag t on tc.id_tag=t.id " +
-                "group by o.user_id, t.name " +
-                "order by sum(o.cost) desc limit 1";
-        Root<Order> root = query.from(Order.class);
-        Join<Object, Object> tag = root.join("certificate").join("tags");
-        query.select(builder.tuple(root.get("userId"),
-                builder.sum(root.get("cost")),
-                builder.count(tag.get("name")),
-                tag.get("id"), tag.get("name")));
-        query.groupBy(root.get("userId"), tag.get("name"))
-                .orderBy(builder.desc(builder.sum(root.get("cost"))));
-        Optional<Tuple> tuple = entityManager.createQuery(query).setMaxResults(1).getResultList().stream().findFirst();
-        TopUserInfo topUserInfo = new TopUserInfo();
-        if (tuple.isPresent()) {
-            topUserInfo = TopUserInfo.builder()
-                    .userId((Long) tuple.get().get(0))
-                    .totalCost(new BigDecimal(tuple.get().get(1).toString()))
-                    .tagCount((Long) tuple.get().get(2))
-                    .topTag(TagDTO.builder()
-                            .id((Long) tuple.get().get(3))
-                            .name(tuple.get().get(4).toString())
-                            .build())
-                    .build();
+        Set<OrderCertificate> certificates = entity.getCertificates();
+        if (!certificates.isEmpty()) {
+            Order orderId = Order.builder().id(order.getId()).build();
+            certificates.forEach(o -> {
+                o.setOrder(orderId);
+                entityManager.persist(o);
+            });
         }
-        return topUserInfo;
+        Optional<Order> result = findById(order.getId());
+        result.ifPresent(o -> o.setCertificates(certificates));
+        return result.orElseGet(Order::new);
     }
 
+    @Override
+    public Tag getTopUserTag() {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Object> query = builder.createQuery();
+        /**
+         * SELECT t.id ,t.name,sum(oc.quantity) FROM  certificates.order o
+         * join certificates.order_certificate oc on o.id=oc.id_order
+         * join certificates.gift_certificate gc on oc.id_certificate=gc.id
+         * join certificates.tag_certificate tc on gc.id=tc.id_certificate
+         * join tag t on tc.id_tag=t.id
+         * where o.user_id=
+         * (SELECT u.id  FROM certificates.user u
+         * join  certificates.order o on u.id=o.user_id
+         * join certificates.order_certificate oc on o.id=oc.id_order
+         * group by u.id
+         * order by sum(oc.quantity*oc.one_cost) desc limit 1)
+         * group by t.name limit 1
+         **/
+        Root<User> root = query.from(User.class);
+        Join<Object, Object> join = root.join("orders").join("certificates");
+        Expression<Number> prod = builder.prod(join.get("quantity"), join.get("oneCost"));
+        query.select(root.get("id"))
+                .groupBy(root.get("id"))
+                .orderBy(builder.desc(builder.sum(prod)));
+        long userId = (long) entityManager.createQuery(query).setMaxResults(1).getSingleResult();
+
+        CriteriaQuery<Tuple> orderQuery = builder.createTupleQuery();
+        Root<Order> orderRoot = orderQuery.from(Order.class);
+        Join<Object, Object> tagJoin = orderRoot.join("certificates")
+                .join("certificate").join("tags");
+        orderQuery.select(builder.tuple(tagJoin.get("id"), tagJoin.get("name")))
+                .where(builder.equal(orderRoot.get("userId"), userId))
+                .groupBy(tagJoin.get("name"));
+        Optional<Tuple> tuple = entityManager.createQuery(orderQuery)
+                .setMaxResults(1)
+                .getResultList().stream().findFirst();
+        return !tuple.isPresent() ? new Tag() : Tag.builder()
+                .id((long) tuple.get().get(0))
+                .name(tuple.get().get(1).toString()).build();
+    }
 }

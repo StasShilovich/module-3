@@ -15,7 +15,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     private final Class<T> clazz;
 
     @PersistenceContext
-    EntityManager entityManager;
+    protected EntityManager entityManager;
 
     public GenericDaoImpl(Class<T> clazz) {
         this.clazz = clazz;
