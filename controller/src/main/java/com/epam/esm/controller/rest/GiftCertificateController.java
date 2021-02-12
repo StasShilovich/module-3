@@ -89,20 +89,21 @@ public class GiftCertificateController {
     public ResponseEntity delete(@PathVariable(name = "id") Long id)
             throws ServiceException, NotExistEntityException {
         certificateService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**
      * Filter gift certificates by parameters
      *
-     * @param tag
-     * @param part
-     * @param sortBy
-     * @param type
-     * @param page
-     * @param size
-     * @return
-     * @throws ServiceException
+     * @param tag    tag or tags with &(and) condition
+     * @param part   part od name or description
+     * @param sortBy sort type
+     * @param type   sort by name or by date
+     * @param page   page number
+     * @param size   elements on page
+     * @return the response entity
+     * @throws ServiceException           service exception
+     * @throws IncorrectArgumentException incorrect argument exception
      */
     @GetMapping
     public ResponseEntity<PagedModel<CertificateDTO>> filterByParameter(
@@ -116,6 +117,13 @@ public class GiftCertificateController {
         List<CertificateDTO> list = certificateService.filterByParameters(tag, part, sortBy, type, page, size);
         long count = certificateService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
+        List<Link> linkList = buildLink(tag, part, sortBy, type, page, size, pageMetadata.getTotalPages());
+        PagedModel<CertificateDTO> pagedModel = PagedModel.of(list, pageMetadata, linkList);
+        return ResponseEntity.ok(pagedModel);
+    }
+
+    private List<Link> buildLink(String tag, String part, String sortBy, SortType type, int page, int size,
+                                 long maxPage) throws ServiceException, IncorrectArgumentException {
         List<Link> linkList = new ArrayList<>();
         Link self = WebMvcLinkBuilder.linkTo(
                 WebMvcLinkBuilder
@@ -131,7 +139,7 @@ public class GiftCertificateController {
             ).withRel("previous");
             linkList.add(previous);
         }
-        if (pageMetadata.getTotalPages() > page) {
+        if (maxPage > page) {
             Link next = WebMvcLinkBuilder.linkTo(
                     WebMvcLinkBuilder
                             .methodOn(GiftCertificateController.class)
@@ -139,7 +147,6 @@ public class GiftCertificateController {
             ).withRel("next");
             linkList.add(next);
         }
-        PagedModel<CertificateDTO> pagedModel = PagedModel.of(list, pageMetadata, linkList);
-        return ResponseEntity.ok(pagedModel);
+        return linkList;
     }
 }

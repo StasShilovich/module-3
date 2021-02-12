@@ -16,6 +16,5 @@ public class UserDTO {
     private Long id;
     private String name;
     private String surname;
-    private String cash;
     private Set<OrderDTO> orders;
 }

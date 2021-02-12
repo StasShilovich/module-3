@@ -1,4 +1,4 @@
-package com.epam.esm.model.dao;
+package com.epam.esm.model.common;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

@@ -15,19 +15,19 @@ public abstract class CommonController<T> {
     public abstract ResponseEntity<PagedModel<T>> findAll(int page, int size)
             throws ServiceException, IncorrectArgumentException;
 
-    protected List<Link> buildLink(Class<? extends CommonController<T>> clazz, int page, int size, long maxPage)
+    protected List<Link> buildLink(int page, int size, int maxPage)
             throws ServiceException, IncorrectArgumentException {
         List<Link> linkList = new ArrayList<>();
         Link self = WebMvcLinkBuilder.linkTo(
                 WebMvcLinkBuilder
-                        .methodOn(clazz)
+                        .methodOn(this.getClass())
                         .findAll(page, size)
         ).withRel("self");
         linkList.add(self);
         if (page > 1) {
             Link previous = WebMvcLinkBuilder.linkTo(
                     WebMvcLinkBuilder
-                            .methodOn(clazz)
+                            .methodOn(this.getClass())
                             .findAll(page - 1, size)
             ).withRel("previous");
             linkList.add(previous);
@@ -35,7 +35,7 @@ public abstract class CommonController<T> {
         if (maxPage > page) {
             Link next = WebMvcLinkBuilder.linkTo(
                     WebMvcLinkBuilder
-                            .methodOn(clazz)
+                            .methodOn(this.getClass())
                             .findAll(page + 1, size)
             ).withRel("next");
             linkList.add(next);

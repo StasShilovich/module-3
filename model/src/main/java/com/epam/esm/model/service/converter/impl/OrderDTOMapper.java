@@ -42,10 +42,11 @@ public class OrderDTOMapper implements DTOMapper<OrderDTO, Order> {
     public Order fromDTO(OrderDTO orderDTO) {
         Set<OrderCertificate> set = orderDTO.getOrderCertificates() != null ? orderDTO.getOrderCertificates().stream()
                 .map(orderCertificateDTOMapper::fromDTO).collect(Collectors.toSet()) : null;
+        LocalDateTime purchaseTime = StringUtils.isNotEmpty(orderDTO.getPurchaseTime()) ?
+                LocalDateTime.parse(orderDTO.getPurchaseTime()) : null;
         return Order.builder()
                 .id(orderDTO.getId())
-                .purchaseTime(StringUtils.isNotEmpty(orderDTO.getPurchaseTime()) ?
-                        LocalDateTime.parse(orderDTO.getPurchaseTime()) : null)
+                .purchaseTime(purchaseTime)
                 .userId(orderDTO.getUserId())
                 .certificates(set)
                 .build();

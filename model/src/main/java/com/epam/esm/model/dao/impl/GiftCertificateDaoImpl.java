@@ -15,6 +15,12 @@ import javax.persistence.criteria.Root;
 import java.util.Collections;
 import java.util.List;
 
+import static com.epam.esm.model.dao.DaoConstant.CREATE_DATE;
+import static com.epam.esm.model.dao.DaoConstant.DATE;
+import static com.epam.esm.model.dao.DaoConstant.DESCRIPTION;
+import static com.epam.esm.model.dao.DaoConstant.NAME;
+import static com.epam.esm.model.dao.DaoConstant.PERCENT;
+import static com.epam.esm.model.dao.DaoConstant.TAGS;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Repository
@@ -26,11 +32,11 @@ public class GiftCertificateDaoImpl extends GenericDaoImpl<GiftCertificate> impl
 
     @Override
     public List<GiftCertificate> filterByParameters(
-            String tag, String part, String sortBy, SortType type, int offset, int limit) {
+            List<String> tags, String part, String sortBy, SortType type, int offset, int limit) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<GiftCertificate> query = builder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> root = query.from(GiftCertificate.class);
-        buildFilterQuery(builder, root, query, tag, part, sortBy, type);
+        buildFilterQuery(builder, root, query, tags, part, sortBy, type);
         return entityManager.createQuery(query)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
@@ -40,70 +46,71 @@ public class GiftCertificateDaoImpl extends GenericDaoImpl<GiftCertificate> impl
     @Override
     public GiftCertificate update(GiftCertificate giftCertificate) {
         Long id = giftCertificate.getId();
-        GiftCertificate certificate = new GiftCertificate();
-        if (id != null && id > 0) {
-            GiftCertificate certificateDB = findById(id).get();
-            if (!giftCertificate.equals(certificateDB)) {
-                CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-                CriteriaUpdate<GiftCertificate> update = builder.createCriteriaUpdate(GiftCertificate.class);
-                update.from(GiftCertificate.class);
-                if (buildUpdateQuery(update, certificateDB, giftCertificate)) {
-                    entityManager.createQuery(update).executeUpdate();
-                }
-                List<Tag> tagsDB = certificateDB.getTags();
-                List<Tag> tagsNew = giftCertificate.getTags();
-                if (tagsNew != null && isNotEqualsList(tagsNew, tagsDB)) {
-                    certificateDB.setTags(tagsNew);
-                    entityManager.merge(certificateDB);
-                }
-
-            }
-            certificate = certificateDB;
+        GiftCertificate certificateDB = findById(id).get();
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaUpdate<GiftCertificate> update = builder.createCriteriaUpdate(GiftCertificate.class);
+        update.from(GiftCertificate.class);
+        if (buildUpdateQuery(update, certificateDB, giftCertificate)) {
+            entityManager.createQuery(update).executeUpdate();
         }
-        return certificate;
+        List<Tag> tagsDB = certificateDB.getTags();
+        List<Tag> tagsNew = giftCertificate.getTags();
+        if (tagsNew != null && isNotEqualsList(tagsNew, tagsDB)) {
+            certificateDB.setTags(tagsNew);
+            entityManager.merge(certificateDB);
+        }
+        return certificateDB;
     }
 
     private void buildFilterQuery(
             CriteriaBuilder builder, Root<GiftCertificate> root, CriteriaQuery<GiftCertificate> query,
-            String tag, String part, String sortBy, SortType type) {
+            List<String> tags, String part, String sortBy, SortType type) {
         query.select(root);
         Predicate predicatePart = builder.and();
         if (isNotEmpty(part)) {
             predicatePart = predicatePart(builder, root, part);
         }
         Predicate predicateTag = builder.and();
-        if (isNotEmpty(tag)) {
-            predicateTag = predicateTag(builder, root, tag);
+        if (!tags.isEmpty()) {
+            predicateTag = predicateTag(builder, root, tags);
         }
         query.where(builder.and(predicatePart, predicateTag));
 
-        Path<Object> path = isNotEmpty(sortBy) && sortBy.equalsIgnoreCase("date") ?
-                root.get("createDate") :
-                root.get("name");
+        Path<Object> path = isNotEmpty(sortBy) && sortBy.equalsIgnoreCase(DATE) ?
+                root.get(CREATE_DATE) :
+                root.get(NAME);
         query.orderBy(type == SortType.DESC ? builder.desc(path) : builder.asc(path));
     }
 
     private Predicate predicatePart(CriteriaBuilder builder, Root<GiftCertificate> root, String part) {
-        String partLike = "%" + part + "%";
-        Predicate likeName = builder.like(root.get("name"), partLike);
-        Predicate likeDescription = builder.like(root.get("description"), partLike);
+        String partLike = PERCENT + part + PERCENT;
+        Predicate likeName = builder.like(root.get(NAME), partLike);
+        Predicate likeDescription = builder.like(root.get(DESCRIPTION), partLike);
         return builder.or(likeName, likeDescription);
     }
 
-    private Predicate predicateTag(CriteriaBuilder builder, Root<GiftCertificate> root, String tag) {
-        return builder.equal(root.join("tags").get("name"), tag);
+    private Predicate predicateTag(CriteriaBuilder builder, Root<GiftCertificate> root, List<String> tags) {
+        Predicate predicate;
+        if (tags.size() == 1) {
+            predicate = builder.equal(root.join(TAGS).get(NAME), tags.get(0));
+        } else {
+            Predicate tagOne = builder.equal(root.join(TAGS).get(NAME), tags.get(0));
+            Predicate tagTwo = builder.equal(root.join(TAGS).get(NAME), tags.get(1));
+            predicate = builder.and(tagOne, tagTwo);
+        }
+        return predicate;
     }
 
     private boolean buildUpdateQuery(CriteriaUpdate<GiftCertificate> update,
                                      GiftCertificate certificateDB, GiftCertificate giftCertificate) {
         int count = 0;
         if (isStringChanged(certificateDB.getName(), giftCertificate.getName())) {
-            update.set("name", giftCertificate.getName());
+            update.set(NAME, giftCertificate.getName());
             certificateDB.setName(giftCertificate.getName());
             count++;
         }
         if (isStringChanged(certificateDB.getDescription(), giftCertificate.getDescription())) {
-            update.set("description", giftCertificate.getDescription());
+            update.set(DESCRIPTION, giftCertificate.getDescription());
             certificateDB.setDescription(giftCertificate.getDescription());
             count++;
         }
@@ -121,7 +128,7 @@ public class GiftCertificateDaoImpl extends GenericDaoImpl<GiftCertificate> impl
         }
         if (giftCertificate.getCreateDate() != null &&
                 !certificateDB.getCreateDate().equals(giftCertificate.getCreateDate())) {
-            update.set("createDate", giftCertificate.getCreateDate());
+            update.set(CREATE_DATE, giftCertificate.getCreateDate());
             certificateDB.setCreateDate(giftCertificate.getCreateDate());
             count++;
         }

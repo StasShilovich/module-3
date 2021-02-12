@@ -1,27 +1,28 @@
 package com.epam.esm.model.dao;
 
+import com.epam.esm.model.common.BeanUtil;
 import com.epam.esm.model.dao.entity.Audit;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PrePersist;
-import javax.persistence.PreRemove;
-import javax.persistence.PreUpdate;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
 import java.time.LocalDateTime;
 
 public class AuditListener {
 
-    @PrePersist
+    @PostPersist
     private void beforePersistOperation(Object object) {
         persistAudit("PERSIST", object);
     }
 
-    @PreUpdate
+    @PostUpdate
     private void beforeUpdateOperation(Object object) {
         persistAudit("UPDATE", object);
     }
 
-    @PreRemove
+    @PostRemove
     private void beforeRemoveOperation(Object object) {
         persistAudit("REMOVE", object);
     }

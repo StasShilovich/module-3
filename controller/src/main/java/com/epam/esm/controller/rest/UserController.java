@@ -45,7 +45,7 @@ public class UserController extends CommonController<UserDTO> {
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
-    @GetMapping("/top/tag")
+    @GetMapping("/top-tag")
     public ResponseEntity<TagDTO> getTopUserTag() throws ServiceException {
         TagDTO tag = orderService.getTopUserTag();
         return ResponseEntity.ok(tag);
@@ -60,7 +60,7 @@ public class UserController extends CommonController<UserDTO> {
         List<UserDTO> tags = userService.findAll(page, size);
         long count = userService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
-        List<Link> linkList = buildLink(UserController.class, page, size, pageMetadata.getTotalPages());
+        List<Link> linkList = buildLink(page, size, (int) pageMetadata.getTotalPages());
         PagedModel<UserDTO> pagedModel = PagedModel.of(tags, pageMetadata, linkList);
         return ResponseEntity.ok(pagedModel);
     }

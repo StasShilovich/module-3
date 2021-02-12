@@ -41,7 +41,7 @@ public class TagController extends CommonController<TagDTO> {
      * @throws ServiceException the service exception
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TagDTO> find(@PathVariable(name = "id") Long id) throws ServiceException, NotExistEntityException {
+    public ResponseEntity<TagDTO> find(@PathVariable(name = "id") Long id) throws ServiceException {
         TagDTO tag = tagService.find(id);
         return ResponseEntity.ok(tag);
     }
@@ -69,7 +69,7 @@ public class TagController extends CommonController<TagDTO> {
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable(name = "id") Long id) throws ServiceException, NotExistEntityException {
         tagService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class TagController extends CommonController<TagDTO> {
         List<TagDTO> tags = tagService.findAll(page, size);
         long count = tagService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
-        List<Link> linkList = buildLink(TagController.class, page, size, pageMetadata.getTotalPages());
+        List<Link> linkList = buildLink(page, size, (int) pageMetadata.getTotalPages());
         PagedModel<TagDTO> pagedModel = PagedModel.of(tags, pageMetadata, linkList);
         return ResponseEntity.ok(pagedModel);
     }

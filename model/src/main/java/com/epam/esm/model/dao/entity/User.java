@@ -2,10 +2,7 @@ package com.epam.esm.model.dao.entity;
 
 import com.epam.esm.model.dao.AuditListener;
 import com.epam.esm.model.dao.GenericEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,9 +14,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import java.math.BigDecimal;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,8 +32,6 @@ public class User extends GenericEntity {
     private String name;
     @Column
     private String surname;
-    @Column
-    private BigDecimal cash;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private Set<Order> orders;

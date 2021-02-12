@@ -8,6 +8,6 @@ import java.util.List;
 public interface GiftCertificateDao extends GenericDao<GiftCertificate> {
 
     List<GiftCertificate> filterByParameters(
-            String tag, String part, String sortBy, SortType type, int offset, int limit);
+            List<String> tags, String part, String sortBy, SortType type, int offset, int limit);
 
 }

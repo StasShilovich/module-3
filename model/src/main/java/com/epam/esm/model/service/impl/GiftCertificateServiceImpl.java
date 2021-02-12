@@ -10,7 +10,8 @@ import com.epam.esm.model.service.GiftCertificateService;
 import com.epam.esm.model.service.converter.impl.GiftCertificateDTOMapper;
 import com.epam.esm.model.service.dto.CertificateDTO;
 import com.epam.esm.model.service.exception.ServiceException;
-import org.apache.log4j.Logger;
+import com.epam.esm.model.common.ParameterParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +20,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
-    private static final Logger logger = Logger.getLogger(GiftCertificateServiceImpl.class);
     private final GiftCertificateDao certificateDao;
     private final GiftCertificateDTOMapper dtoMapper;
 
@@ -39,7 +40,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             return certificate.map(dtoMapper::toDTO)
                     .orElseThrow(() -> new NotExistEntityException("Gift certificate with id=" + id + " not exist!"));
         } catch (DataAccessException e) {
-            logger.error("Find certificate service exception", e);
+            log.error("Find certificate service exception", e);
             throw new ServiceException("Find certificate service exception", e);
         }
     }
@@ -52,7 +53,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             GiftCertificate giftCertificate = certificateDao.create(certificate);
             return dtoMapper.toDTO(giftCertificate);
         } catch (DataAccessException e) {
-            logger.error("Add certificate service exception", e);
+            log.error("Add certificate service exception", e);
             throw new ServiceException("Add certificate service exception", e);
         }
     }
@@ -65,7 +66,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             GiftCertificate updated = certificateDao.update(certificate);
             return dtoMapper.toDTO(updated);
         } catch (DataAccessException e) {
-            logger.error("Update certificate service exception", e);
+            log.error("Update certificate service exception", e);
             throw new ServiceException("Update certificate service exception", e);
         }
     }
@@ -76,7 +77,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             certificateDao.delete(id);
         } catch (DataAccessException e) {
-            logger.error("Delete certificate service exception", e);
+            log.error("Delete certificate service exception", e);
             throw new ServiceException("Delete certificate service exception", e);
         }
     }
@@ -89,11 +90,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             long count = count();
             Page certificatePage = new Page(page, size, count);
-            List<GiftCertificate> certificates = certificateDao.filterByParameters(tag, part, sortBy, type,
+            List<String> tags = ParameterParser.parseWithAndCondition(tag);
+            List<GiftCertificate> certificates = certificateDao.filterByParameters(tags, part, sortBy, type,
                     certificatePage.getOffset(), certificatePage.getLimit());
             return certificates.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {
-            logger.error("Filter by parameters exception", e);
+            log.error("Filter by parameters exception", e);
             throw new ServiceException("Filter by parameters exception", e);
         }
     }
@@ -103,7 +105,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return certificateDao.getCountOfEntities();
         } catch (DataAccessException e) {
-            logger.error("Count certificates service exception", e);
+            log.error("Count certificates service exception", e);
             throw new ServiceException("Count certificates service exception", e);
         }
     }

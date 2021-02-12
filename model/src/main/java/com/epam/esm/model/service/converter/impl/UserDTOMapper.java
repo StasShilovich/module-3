@@ -5,10 +5,8 @@ import com.epam.esm.model.dao.entity.User;
 import com.epam.esm.model.service.converter.DTOMapper;
 import com.epam.esm.model.service.dto.OrderDTO;
 import com.epam.esm.model.service.dto.UserDTO;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,7 +27,6 @@ public class UserDTOMapper implements DTOMapper<UserDTO, User> {
                 .id(user.getId())
                 .name(user.getName())
                 .surname(user.getSurname())
-                .cash(user.getCash().toString())
                 .orders(orderDTOS)
                 .build();
     }
@@ -42,7 +39,6 @@ public class UserDTOMapper implements DTOMapper<UserDTO, User> {
                 .id(userDTO.getId())
                 .name(userDTO.getName())
                 .surname(userDTO.getSurname())
-                .cash(StringUtils.isNotEmpty(userDTO.getCash()) ? new BigDecimal(userDTO.getCash()) : BigDecimal.ZERO)
                 .orders(orders)
                 .build();
     }

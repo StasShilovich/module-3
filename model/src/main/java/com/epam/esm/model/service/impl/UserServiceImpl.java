@@ -9,7 +9,7 @@ import com.epam.esm.model.service.dto.UserDTO;
 import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.exception.ServiceException;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final Logger logger = Logger.getLogger(UserServiceImpl.class);
     private final UserDao userDao;
     private final UserDTOMapper userMapper;
 
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
             return user.map(userMapper::toDTO)
                     .orElseThrow(() -> new NotExistEntityException("User with id=" + id + " not exist!"));
         } catch (DataAccessException e) {
-            logger.error("Find user service exception", e);
+            log.error("Find user service exception", e);
             throw new ServiceException("Find user service exception", e);
         }
     }
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
             List<User> tags = userDao.findAll(userPage.getOffset(), userPage.getLimit());
             return tags.stream().map(userMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {
-            logger.error("Find all users service exception", e);
+            log.error("Find all users service exception", e);
             throw new ServiceException("Find all users service exception", e);
         }
     }
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         try {
             return userDao.getCountOfEntities();
         } catch (DataAccessException e) {
-            logger.error("Count users service exception", e);
+            log.error("Count users service exception", e);
             throw new ServiceException("Count users service exception", e);
         }
     }

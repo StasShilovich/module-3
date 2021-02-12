@@ -45,16 +45,18 @@ public class GiftCertificateDTOMapper implements DTOMapper<CertificateDTO, GiftC
     public GiftCertificate fromDTO(CertificateDTO certificateDTO) {
         List<Tag> tagList = certificateDTO.getTags() != null ?
                 certificateDTO.getTags().stream().map(tagDTOMapper::fromDTO).collect(Collectors.toList()) : null;
+        LocalDateTime createDate = StringUtils.isNotEmpty(certificateDTO.getCreateDate()) ?
+                LocalDateTime.parse(certificateDTO.getCreateDate()) : null;
+        LocalDateTime lastUpdateDate = StringUtils.isNotEmpty(certificateDTO.getLastUpdateDate()) ?
+                LocalDateTime.parse(certificateDTO.getLastUpdateDate()) : null;
         return GiftCertificate.builder()
                 .id(certificateDTO.getId())
                 .name(certificateDTO.getName())
                 .description(certificateDTO.getDescription())
                 .duration(certificateDTO.getDuration())
                 .price(certificateDTO.getPrice())
-                .createDate(StringUtils.isNotEmpty(certificateDTO.getCreateDate()) ?
-                        LocalDateTime.parse(certificateDTO.getCreateDate()) : null)
-                .lastUpdateDate(StringUtils.isNotEmpty(certificateDTO.getLastUpdateDate()) ?
-                        LocalDateTime.parse(certificateDTO.getLastUpdateDate()) : null)
+                .createDate(createDate)
+                .lastUpdateDate(lastUpdateDate)
                 .tags(tagList).build();
     }
 }
