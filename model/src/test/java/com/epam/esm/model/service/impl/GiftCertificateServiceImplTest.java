@@ -2,7 +2,7 @@ package com.epam.esm.model.service.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
-import com.epam.esm.model.dao.entity.SortType;
+import com.epam.esm.model.common.SortType;
 import com.epam.esm.model.service.GiftCertificateService;
 import com.epam.esm.model.service.converter.impl.GiftCertificateDTOMapper;
 import com.epam.esm.model.service.converter.impl.TagDTOMapper;
@@ -154,7 +154,7 @@ class GiftCertificateServiceImplTest {
         lenient().when(dao.filterByParameters(anyList(), anyString(), anyString(), any(), anyInt(), anyInt()))
                 .thenReturn(certificates);
         List<CertificateDTO> actual = service
-                .filterByParameters("", "", "", SortType.DESC, 2, 3);
+                .filterByParameters(new ArrayList<>(), "", "", SortType.DESC, 2, 3);
         List<CertificateDTO> expected = new ArrayList<>();
         expected.add(certificateDTO);
         assertEquals(expected, actual);
@@ -166,7 +166,7 @@ class GiftCertificateServiceImplTest {
         lenient().when(dao.filterByParameters(anyList(), anyString(), anyString(), any(), anyInt(), anyInt()))
                 .thenReturn(certificates);
         List<CertificateDTO> actual = service
-                .filterByParameters("", "", "", SortType.DESC, 2, 3);
+                .filterByParameters(new ArrayList<>(), "", "", SortType.DESC, 2, 3);
         assertNotEquals(0, actual.size());
     }
 
@@ -176,7 +176,7 @@ class GiftCertificateServiceImplTest {
         lenient().when(dao.filterByParameters(anyList(), anyString(), anyString(), any(), anyInt(), anyInt()))
                 .thenThrow(EmptyResultDataAccessException.class);
         assertThrows(ServiceException.class, () -> service
-                .filterByParameters("", "", "", SortType.DESC, 2, 3));
+                .filterByParameters(new ArrayList<>(), "", "", SortType.DESC, 2, 3));
     }
 
     @Test
@@ -185,7 +185,7 @@ class GiftCertificateServiceImplTest {
         lenient().when(dao.filterByParameters(anyList(), anyString(), anyString(), any(), anyInt(), anyInt()))
                 .thenReturn(certificates);
         assertThrows(IncorrectArgumentException.class, () -> service
-                .filterByParameters("", "", "", SortType.DESC, 4, 3));
+                .filterByParameters(new ArrayList<>(), "", "", SortType.DESC, 4, 3));
     }
 
     @Test

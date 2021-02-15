@@ -80,6 +80,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public long count() throws ServiceException {
         try {
             return tagDao.getCountOfEntities();

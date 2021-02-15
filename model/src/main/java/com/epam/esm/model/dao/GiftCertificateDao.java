@@ -1,7 +1,7 @@
 package com.epam.esm.model.dao;
 
 import com.epam.esm.model.dao.entity.GiftCertificate;
-import com.epam.esm.model.dao.entity.SortType;
+import com.epam.esm.model.common.SortType;
 
 import java.util.List;
 

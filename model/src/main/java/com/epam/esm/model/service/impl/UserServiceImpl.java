@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public List<UserDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
@@ -57,6 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public long count() throws ServiceException {
         try {
             return userDao.getCountOfEntities();

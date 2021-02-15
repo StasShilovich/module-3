@@ -1,6 +1,6 @@
 package com.epam.esm.controller.rest;
 
-import com.epam.esm.model.dao.entity.SortType;
+import com.epam.esm.model.common.SortType;
 import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.GiftCertificateService;
@@ -107,35 +107,35 @@ public class GiftCertificateController {
      */
     @GetMapping
     public ResponseEntity<PagedModel<CertificateDTO>> filterByParameter(
-            @RequestParam(value = "tag", required = false) String tag,
+            @RequestParam(value = "tags", required = false) List<String> tags,
             @RequestParam(value = "part", required = false) String part,
             @RequestParam(value = "sort_by", required = false) String sortBy,
             @RequestParam(value = "type", required = false) SortType type,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) throws ServiceException, IncorrectArgumentException {
-        List<CertificateDTO> list = certificateService.filterByParameters(tag, part, sortBy, type, page, size);
+        List<CertificateDTO> list = certificateService.filterByParameters(tags, part, sortBy, type, page, size);
         long count = certificateService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
-        List<Link> linkList = buildLink(tag, part, sortBy, type, page, size, pageMetadata.getTotalPages());
+        List<Link> linkList = buildLink(tags, part, sortBy, type, page, size, pageMetadata.getTotalPages());
         PagedModel<CertificateDTO> pagedModel = PagedModel.of(list, pageMetadata, linkList);
         return ResponseEntity.ok(pagedModel);
     }
 
-    private List<Link> buildLink(String tag, String part, String sortBy, SortType type, int page, int size,
+    private List<Link> buildLink(List<String> tags, String part, String sortBy, SortType type, int page, int size,
                                  long maxPage) throws ServiceException, IncorrectArgumentException {
         List<Link> linkList = new ArrayList<>();
         Link self = WebMvcLinkBuilder.linkTo(
                 WebMvcLinkBuilder
                         .methodOn(GiftCertificateController.class)
-                        .filterByParameter(tag, part, sortBy, type, page, size)
+                        .filterByParameter(tags, part, sortBy, type, page, size)
         ).withRel("self");
         linkList.add(self);
         if (page > 1) {
             Link previous = WebMvcLinkBuilder.linkTo(
                     WebMvcLinkBuilder
                             .methodOn(GiftCertificateController.class)
-                            .filterByParameter(tag, part, sortBy, type, page - 1, size)
+                            .filterByParameter(tags, part, sortBy, type, page - 1, size)
             ).withRel("previous");
             linkList.add(previous);
         }
@@ -143,7 +143,7 @@ public class GiftCertificateController {
             Link next = WebMvcLinkBuilder.linkTo(
                     WebMvcLinkBuilder
                             .methodOn(GiftCertificateController.class)
-                            .filterByParameter(tag, part, sortBy, type, page + 1, size)
+                            .filterByParameter(tags, part, sortBy, type, page + 1, size)
             ).withRel("next");
             linkList.add(next);
         }

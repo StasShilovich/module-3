@@ -30,7 +30,7 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(ServiceException.class)
-    private ResponseEntity<ErrorResponse> handleException(ServiceException exception) {
+    private ResponseEntity<ErrorResponse> handleServiceException(ServiceException exception) {
         String message = messageSource.getMessage("service", null, locale);
         return ResponseEntity.status(BAD_REQUEST).body(buildErrorResponse(BAD_REQUEST,
                 message + " " + exception.getLocalizedMessage()));
@@ -44,14 +44,15 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    private ResponseEntity<ErrorResponse> handleNotExistException(RuntimeException exception) {
+    private ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException exception) {
         String internationale = messageSource.getMessage("runtime", null, locale);
         String message = exception.getClass().getName() + " : " + exception.getMessage();
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(buildErrorResponse(INTERNAL_SERVER_ERROR,
                 internationale + " " + message));
     }
+
     @ExceptionHandler(IncorrectArgumentException.class)
-    private ResponseEntity<ErrorResponse> handleNotExistException(IncorrectArgumentException exception) {
+    private ResponseEntity<ErrorResponse> handleIncorrectArgumentException(IncorrectArgumentException exception) {
         String internationale = messageSource.getMessage("incorrectArgument", null, locale);
         String message = exception.getClass().getName() + " : " + exception.getMessage();
         return ResponseEntity.status(BAD_REQUEST).body(buildErrorResponse(BAD_REQUEST,
@@ -61,6 +62,4 @@ public class RestExceptionHandler {
     private ErrorResponse buildErrorResponse(HttpStatus status, String message) {
         return new ErrorResponse(message, status.value() * 100 + atomicInteger.incrementAndGet());
     }
-
-
 }

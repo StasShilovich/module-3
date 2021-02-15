@@ -2,7 +2,7 @@ package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
-import com.epam.esm.model.dao.entity.SortType;
+import com.epam.esm.model.common.SortType;
 import com.epam.esm.model.dao.entity.Tag;
 import org.springframework.stereotype.Repository;
 
@@ -71,7 +71,7 @@ public class GiftCertificateDaoImpl extends GenericDaoImpl<GiftCertificate> impl
             predicatePart = predicatePart(builder, root, part);
         }
         Predicate predicateTag = builder.and();
-        if (!tags.isEmpty()) {
+        if (tags != null && !tags.isEmpty()) {
             predicateTag = predicateTag(builder, root, tags);
         }
         query.where(builder.and(predicatePart, predicateTag));

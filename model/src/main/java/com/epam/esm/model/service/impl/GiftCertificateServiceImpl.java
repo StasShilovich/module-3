@@ -2,7 +2,7 @@ package com.epam.esm.model.service.impl;
 
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
-import com.epam.esm.model.dao.entity.SortType;
+import com.epam.esm.model.common.SortType;
 import com.epam.esm.model.service.Page;
 import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
@@ -10,7 +10,6 @@ import com.epam.esm.model.service.GiftCertificateService;
 import com.epam.esm.model.service.converter.impl.GiftCertificateDTOMapper;
 import com.epam.esm.model.service.dto.CertificateDTO;
 import com.epam.esm.model.service.exception.ServiceException;
-import com.epam.esm.model.common.ParameterParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -85,12 +84,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public List<CertificateDTO> filterByParameters(
-            String tag, String part, String sortBy, SortType type, int page, int size)
+            List<String> tags, String part, String sortBy, SortType type, int page, int size)
             throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
             Page certificatePage = new Page(page, size, count);
-            List<String> tags = ParameterParser.parseWithAndCondition(tag);
             List<GiftCertificate> certificates = certificateDao.filterByParameters(tags, part, sortBy, type,
                     certificatePage.getOffset(), certificatePage.getLimit());
             return certificates.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
@@ -101,6 +99,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public long count() throws ServiceException {
         try {
             return certificateDao.getCountOfEntities();

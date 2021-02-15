@@ -1,4 +1,4 @@
-package com.epam.esm.model.dao.entity;
+package com.epam.esm.model.common;
 
 public enum SortType {
     ASC,
