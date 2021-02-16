@@ -5,7 +5,7 @@ import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.common.SortType;
 import com.epam.esm.model.dao.entity.Tag;
-import com.epam.esm.model.dao.util.GiftCertificateUtil;
+import com.epam.esm.model.dao.GiftCertificateHandler;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -14,7 +14,6 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public class GiftCertificateDaoImpl extends GenericDaoImpl<GiftCertificate> impl
         Long id = giftCertificate.getId();
         GiftCertificate certificateDB = findById(id).get();
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        Map<String, Object> changedParameters = GiftCertificateUtil.defineChanges(giftCertificate, certificateDB);
+        Map<String, Object> changedParameters = GiftCertificateHandler.defineChanges(giftCertificate, certificateDB);
         if (!changedParameters.isEmpty()) {
             CriteriaUpdate<GiftCertificate> update = builder.createCriteriaUpdate(GiftCertificate.class);
             update.from(GiftCertificate.class);
@@ -59,7 +58,7 @@ public class GiftCertificateDaoImpl extends GenericDaoImpl<GiftCertificate> impl
         }
         List<Tag> tagsDB = certificateDB.getTags();
         List<Tag> tagsNew = giftCertificate.getTags();
-        if (tagsNew != null && GiftCertificateUtil.isNotEqualsList(tagsNew, tagsDB)) {
+        if (tagsNew != null && GiftCertificateHandler.isNotEqualsList(tagsNew, tagsDB)) {
             certificateDB.setTags(tagsNew);
             entityManager.merge(certificateDB);
         }
