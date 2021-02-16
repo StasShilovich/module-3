@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional
 public class TagServiceImpl implements TagService {
 
     private final TagDao tagDao;
@@ -30,7 +31,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
     public TagDTO find(Long id) throws ServiceException {
         try {
             Optional<Tag> tag = tagDao.findById(id);
@@ -42,7 +42,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
     public TagDTO add(TagDTO tagDTO) throws ServiceException {
         try {
             Tag fromDTO = dtoMapper.fromDTO(tagDTO);
@@ -55,7 +54,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
     public void delete(Long id) throws ServiceException {
         try {
             tagDao.delete(id);
@@ -66,7 +64,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
     public List<TagDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
@@ -80,7 +77,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
     public long count() throws ServiceException {
         try {
             return tagDao.getCountOfEntities();

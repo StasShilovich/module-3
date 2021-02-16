@@ -1,8 +1,8 @@
 package com.epam.esm.model.service.impl;
 
+import com.epam.esm.model.common.FilterParams;
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
-import com.epam.esm.model.common.SortType;
 import com.epam.esm.model.service.Page;
 import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateDao certificateDao;
@@ -32,7 +33,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
     public CertificateDTO find(Long id) throws ServiceException, NotExistEntityException {
         try {
             Optional<GiftCertificate> certificate = certificateDao.findById(id);
@@ -45,7 +45,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
     public CertificateDTO add(CertificateDTO certificateDTO) throws ServiceException {
         try {
             GiftCertificate certificate = dtoMapper.fromDTO(certificateDTO);
@@ -58,12 +57,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
-    public CertificateDTO update(CertificateDTO certificateDTO) throws ServiceException {
+    public CertificateDTO update(CertificateDTO certificateDTO) throws ServiceException, NotExistEntityException {
         try {
             GiftCertificate certificate = dtoMapper.fromDTO(certificateDTO);
             GiftCertificate updated = certificateDao.update(certificate);
-            return dtoMapper.toDTO(updated);
+            return find(updated.getId());
         } catch (DataAccessException e) {
             log.error("Update certificate service exception", e);
             throw new ServiceException("Update certificate service exception", e);
@@ -71,7 +69,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
     public void delete(Long id) throws ServiceException {
         try {
             certificateDao.delete(id);
@@ -82,14 +79,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
-    public List<CertificateDTO> filterByParameters(
-            List<String> tags, String part, String sortBy, SortType type, int page, int size)
+    public List<CertificateDTO> filterByParameters(FilterParams filterParams, int page, int size)
             throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
             Page certificatePage = new Page(page, size, count);
-            List<GiftCertificate> certificates = certificateDao.filterByParameters(tags, part, sortBy, type,
+            List<GiftCertificate> certificates = certificateDao.filterByParameters(filterParams,
                     certificatePage.getOffset(), certificatePage.getLimit());
             return certificates.stream().map(dtoMapper::toDTO).collect(Collectors.toList());
         } catch (DataAccessException e) {
@@ -99,7 +94,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional
     public long count() throws ServiceException {
         try {
             return certificateDao.getCountOfEntities();

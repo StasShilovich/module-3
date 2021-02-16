@@ -32,7 +32,7 @@ public class User extends GenericEntity {
     private String name;
     @Column
     private String surname;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private Set<Order> orders;
 }

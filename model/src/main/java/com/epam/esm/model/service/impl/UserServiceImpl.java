@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
@@ -31,7 +32,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDTO find(Long id) throws ServiceException, NotExistEntityException {
         try {
             Optional<User> user = userDao.findById(id);
@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public List<UserDTO> findAll(int page, int size) throws ServiceException, IncorrectArgumentException {
         try {
             long count = count();
@@ -58,7 +57,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public long count() throws ServiceException {
         try {
             return userDao.getCountOfEntities();

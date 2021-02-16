@@ -1,5 +1,6 @@
 package com.epam.esm.model.service.impl;
 
+import com.epam.esm.model.common.FilterParams;
 import com.epam.esm.model.dao.GiftCertificateDao;
 import com.epam.esm.model.dao.entity.GiftCertificate;
 import com.epam.esm.model.common.SortType;
@@ -129,14 +130,14 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void testUpdatePositive() throws ServiceException {
+    void testUpdatePositive() throws ServiceException, NotExistEntityException {
         lenient().when(dao.update(any(GiftCertificate.class))).thenReturn(certificate);
         CertificateDTO actual = service.update(certificateDTO);
         assertEquals(certificateDTO, actual);
     }
 
     @Test
-    void testUpdateNegative() throws ServiceException {
+    void testUpdateNegative() throws ServiceException, NotExistEntityException {
         lenient().when(dao.update(any(GiftCertificate.class))).thenReturn(certificate);
         CertificateDTO actual = service.update(certificateDTO);
         assertNotEquals(null, actual);
@@ -151,10 +152,10 @@ class GiftCertificateServiceImplTest {
     @Test
     void testFilterByParametersPositive() throws ServiceException, IncorrectArgumentException {
         lenient().when(dao.getCountOfEntities()).thenReturn(10L);
-        lenient().when(dao.filterByParameters(anyList(), anyString(), anyString(), any(), anyInt(), anyInt()))
+        lenient().when(dao.filterByParameters(any(), anyInt(), anyInt()))
                 .thenReturn(certificates);
         List<CertificateDTO> actual = service
-                .filterByParameters(new ArrayList<>(), "", "", SortType.DESC, 2, 3);
+                .filterByParameters(new FilterParams(), 2, 3);
         List<CertificateDTO> expected = new ArrayList<>();
         expected.add(certificateDTO);
         assertEquals(expected, actual);
@@ -163,29 +164,29 @@ class GiftCertificateServiceImplTest {
     @Test
     void testFilterByParametersNegative() throws ServiceException, IncorrectArgumentException {
         lenient().when(dao.getCountOfEntities()).thenReturn(10L);
-        lenient().when(dao.filterByParameters(anyList(), anyString(), anyString(), any(), anyInt(), anyInt()))
+        lenient().when(dao.filterByParameters(any(), anyInt(), anyInt()))
                 .thenReturn(certificates);
         List<CertificateDTO> actual = service
-                .filterByParameters(new ArrayList<>(), "", "", SortType.DESC, 2, 3);
+                .filterByParameters(new FilterParams(), 2, 3);
         assertNotEquals(0, actual.size());
     }
 
     @Test
     void testFilterByParametersServiceException() {
         lenient().when(dao.getCountOfEntities()).thenReturn(10L);
-        lenient().when(dao.filterByParameters(anyList(), anyString(), anyString(), any(), anyInt(), anyInt()))
+        lenient().when(dao.filterByParameters(any(), anyInt(), anyInt()))
                 .thenThrow(EmptyResultDataAccessException.class);
         assertThrows(ServiceException.class, () -> service
-                .filterByParameters(new ArrayList<>(), "", "", SortType.DESC, 2, 3));
+                .filterByParameters(new FilterParams(), 2, 3));
     }
 
     @Test
     void testFilterByParametersIncorrectArgumentException() {
         lenient().when(dao.getCountOfEntities()).thenReturn(9L);
-        lenient().when(dao.filterByParameters(anyList(), anyString(), anyString(), any(), anyInt(), anyInt()))
+        lenient().when(dao.filterByParameters(any(), anyInt(), anyInt()))
                 .thenReturn(certificates);
         assertThrows(IncorrectArgumentException.class, () -> service
-                .filterByParameters(new ArrayList<>(), "", "", SortType.DESC, 4, 3));
+                .filterByParameters(new FilterParams(), 4, 3));
     }
 
     @Test

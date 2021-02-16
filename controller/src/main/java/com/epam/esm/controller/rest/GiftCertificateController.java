@@ -1,5 +1,6 @@
 package com.epam.esm.controller.rest;
 
+import com.epam.esm.model.common.FilterParams;
 import com.epam.esm.model.common.SortType;
 import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.exception.NotExistEntityException;
@@ -73,7 +74,8 @@ public class GiftCertificateController {
      * @throws ServiceException the service exception
      */
     @PutMapping(consumes = "application/json")
-    public ResponseEntity<CertificateDTO> update(@RequestBody CertificateDTO certificateDTO) throws ServiceException {
+    public ResponseEntity<CertificateDTO> update(@RequestBody CertificateDTO certificateDTO)
+            throws ServiceException, NotExistEntityException {
         CertificateDTO result = certificateService.update(certificateDTO);
         return ResponseEntity.ok(result);
     }
@@ -95,7 +97,7 @@ public class GiftCertificateController {
     /**
      * Filter gift certificates by parameters
      *
-     * @param tag    tag or tags with &(and) condition
+     * @param tags    tag or tags with &(and) condition
      * @param part   part od name or description
      * @param sortBy sort type
      * @param type   sort by name or by date
@@ -114,7 +116,13 @@ public class GiftCertificateController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "3") int size
     ) throws ServiceException, IncorrectArgumentException {
-        List<CertificateDTO> list = certificateService.filterByParameters(tags, part, sortBy, type, page, size);
+        FilterParams filterParams = FilterParams.builder()
+                .tags(tags)
+                .part(part)
+                .sortBy(sortBy)
+                .type(type)
+                .build();
+        List<CertificateDTO> list = certificateService.filterByParameters(filterParams, page, size);
         long count = certificateService.count();
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(size, page, count);
         List<Link> linkList = buildLink(tags, part, sortBy, type, page, size, pageMetadata.getTotalPages());

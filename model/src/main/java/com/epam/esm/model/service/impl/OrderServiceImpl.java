@@ -8,17 +8,15 @@ import com.epam.esm.model.service.converter.impl.OrderDTOMapper;
 import com.epam.esm.model.service.converter.impl.TagDTOMapper;
 import com.epam.esm.model.service.dto.OrderDTO;
 import com.epam.esm.model.service.dto.TagDTO;
-import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
+@Transactional
 public class OrderServiceImpl implements OrderService {
 
     private final OrderDao orderDao;
@@ -32,7 +30,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public OrderDTO add(OrderDTO orderDTO) throws ServiceException {
         try {
             Order order = orderMapper.fromDTO(orderDTO);
@@ -45,7 +42,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public TagDTO getTopUserTag() throws ServiceException {
         try {
             Tag tag = orderDao.getTopUserTag();
