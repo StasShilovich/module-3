@@ -8,10 +8,14 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -57,6 +61,17 @@ public class RestExceptionHandler {
         String message = exception.getClass().getName() + " : " + exception.getMessage();
         return ResponseEntity.status(BAD_REQUEST).body(buildErrorResponse(BAD_REQUEST,
                 internationale + " " + message));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    private ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        StringBuilder builder = new StringBuilder();
+        exception.getBindingResult().getAllErrors().forEach(e -> {
+            String fieldName = ((FieldError) e).getField();
+            String errorMessage = e.getDefaultMessage();
+            builder.append(fieldName).append(" ").append(errorMessage).append("; ");
+        });
+        return ResponseEntity.status(BAD_REQUEST).body(buildErrorResponse(BAD_REQUEST, builder.toString()));
     }
 
     private ErrorResponse buildErrorResponse(HttpStatus status, String message) {

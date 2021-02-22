@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Data
@@ -14,7 +15,9 @@ import java.util.Set;
 public class UserDTO {
 
     private Long id;
+    @Size(min = 2, max = 20)
     private String name;
+    @Size(min = 2, max = 40)
     private String surname;
     private Set<OrderDTO> orders;
 }

@@ -130,20 +130,6 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void testUpdatePositive() throws ServiceException, NotExistEntityException {
-        lenient().when(dao.update(any(GiftCertificate.class))).thenReturn(certificate);
-        CertificateDTO actual = service.update(certificateDTO);
-        assertEquals(certificateDTO, actual);
-    }
-
-    @Test
-    void testUpdateNegative() throws ServiceException, NotExistEntityException {
-        lenient().when(dao.update(any(GiftCertificate.class))).thenReturn(certificate);
-        CertificateDTO actual = service.update(certificateDTO);
-        assertNotEquals(null, actual);
-    }
-
-    @Test
     void testUpdateServiceException() {
         lenient().when(dao.update(any(GiftCertificate.class))).thenThrow(EmptyResultDataAccessException.class);
         assertThrows(ServiceException.class, () -> service.update(certificateDTO));

@@ -1,6 +1,7 @@
 package com.epam.esm.model.dao.impl;
 
 import com.epam.esm.model.dao.GenericDao;
+import com.epam.esm.model.service.exception.NotExistEntityException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,7 +31,7 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     @Override
     public Optional<T> findById(long id) {
         T t = entityManager.find(clazz, id);
-        return Optional.of(t);
+        return Optional.ofNullable(t);
     }
 
     @Override
@@ -39,9 +40,13 @@ public abstract class GenericDaoImpl<T> implements GenericDao<T> {
     }
 
     @Override
-    public void delete(long id) {
-        Optional<T> t = findById(id);
-        entityManager.remove(t.get());
+    public void delete(long id) throws NotExistEntityException {
+        T t = entityManager.find(clazz, id);
+        if (t != null) {
+            entityManager.remove(t);
+        } else {
+            throw new NotExistEntityException("Entity with id=" + id + " not exist!");
+        }
     }
 
     @Override

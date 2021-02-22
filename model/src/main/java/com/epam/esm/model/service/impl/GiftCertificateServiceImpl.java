@@ -69,7 +69,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void delete(Long id) throws ServiceException {
+    public void delete(Long id) throws ServiceException, NotExistEntityException {
         try {
             certificateDao.delete(id);
         } catch (DataAccessException e) {

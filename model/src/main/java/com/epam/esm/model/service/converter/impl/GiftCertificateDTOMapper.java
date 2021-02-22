@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,8 @@ public class GiftCertificateDTOMapper implements DTOMapper<CertificateDTO, GiftC
     @Override
     public GiftCertificate fromDTO(CertificateDTO certificateDTO) {
         List<Tag> tagList = certificateDTO.getTags() != null ?
-                certificateDTO.getTags().stream().map(tagDTOMapper::fromDTO).collect(Collectors.toList()) : null;
+                certificateDTO.getTags().stream().map(tagDTOMapper::fromDTO).collect(Collectors.toList()) :
+                new ArrayList<>();
         LocalDateTime createDate = StringUtils.isNotEmpty(certificateDTO.getCreateDate()) ?
                 LocalDateTime.parse(certificateDTO.getCreateDate()) : null;
         LocalDateTime lastUpdateDate = StringUtils.isNotEmpty(certificateDTO.getLastUpdateDate()) ?

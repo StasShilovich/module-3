@@ -104,5 +104,4 @@ public class GiftCertificateDaoImpl extends GenericDaoImpl<GiftCertificate> impl
         return predicate;
     }
 
-
 }

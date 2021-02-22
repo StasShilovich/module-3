@@ -7,6 +7,7 @@ import com.epam.esm.model.service.exception.IncorrectArgumentException;
 import com.epam.esm.model.service.TagService;
 import com.epam.esm.model.service.converter.impl.TagDTOMapper;
 import com.epam.esm.model.service.dto.TagDTO;
+import com.epam.esm.model.service.exception.NotExistEntityException;
 import com.epam.esm.model.service.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -54,7 +55,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void delete(Long id) throws ServiceException {
+    public void delete(Long id) throws ServiceException, NotExistEntityException {
         try {
             tagDao.delete(id);
         } catch (DataAccessException e) {
