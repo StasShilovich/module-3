@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class GiftCertificateController {
      * @throws ServiceException the service exception
      */
     @PostMapping
-    public ResponseEntity<CertificateDTO> add(@RequestBody CertificateDTO certificateDTO) throws ServiceException {
+    public ResponseEntity<CertificateDTO> add(@Valid @RequestBody CertificateDTO certificateDTO) throws ServiceException {
         CertificateDTO result = certificateService.add(certificateDTO);
         return ResponseEntity.ok(result);
     }
@@ -137,14 +138,14 @@ public class GiftCertificateController {
                 WebMvcLinkBuilder
                         .methodOn(GiftCertificateController.class)
                         .filterByParameter(tags, part, sortBy, type, page, size)
-        ).withRel("self");
+        ).withRel("self").expand();
         linkList.add(self);
         if (page > 1) {
             Link previous = WebMvcLinkBuilder.linkTo(
                     WebMvcLinkBuilder
                             .methodOn(GiftCertificateController.class)
                             .filterByParameter(tags, part, sortBy, type, page - 1, size)
-            ).withRel("previous");
+            ).withRel("previous").expand();
             linkList.add(previous);
         }
         if (maxPage > page) {
@@ -152,7 +153,7 @@ public class GiftCertificateController {
                     WebMvcLinkBuilder
                             .methodOn(GiftCertificateController.class)
                             .filterByParameter(tags, part, sortBy, type, page + 1, size)
-            ).withRel("next");
+            ).withRel("next").expand();
             linkList.add(next);
         }
         return linkList;
